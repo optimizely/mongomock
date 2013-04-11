@@ -154,6 +154,13 @@ class Collection(object):
                     for field, value in iteritems(v):
                         arr = existing_document[field]
                         existing_document[field] = [obj for obj in arr if not obj == value]
+                elif k == '$pushAll':
+                    for field, value in iteritems(v):
+                        arr = existing_document.get(field)
+                        if arr is None:
+                            existing_document[field] = list(value)
+                        else:
+                            existing_document[field].append(list(value))
                 else:
                     if first:
                         # replace entire document
