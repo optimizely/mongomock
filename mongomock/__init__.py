@@ -120,7 +120,7 @@ class Collection(object):
     @property
     def full_name(self):
         return "{}.{}".format(self._database._name, self._name)
-    def insert(self, data):
+    def insert(self, data, safe = None, continue_on_error = None):
         if isinstance(data, list):
             return [self._insert(element) for element in data]
         return self._insert(data)
