@@ -75,7 +75,7 @@ class Connection(object):
     def __getitem__(self, db_name):
         db = self._databases.get(db_name, None)
         if db is None:
-            db = self._databases[db_name] = Database(self)
+            db = self._databases[db_name] = Database(self, db_name)
         return db
     def __getattr__(self, attr):
         return self[attr]
@@ -96,14 +96,15 @@ class Connection(object):
     }
 
 class Database(object):
-    def __init__(self, conn):
+    def __init__(self, conn, name):
         super(Database, self).__init__()
-        self._collections = {'system.indexes' : Collection(self)}
+        self._collections = {'system.indexes' : Collection(self, "system.indexes")}
         self._connection = conn
+        self._name = name
     def __getitem__(self, collection_name):
         db = self._collections.get(collection_name, None)
         if db is None:
-            db = self._collections[collection_name] = Collection(self)
+            db = self._collections[collection_name] = Collection(self, collection_name)
         return db
     def __getattr__(self, attr):
         return self[attr]
@@ -111,10 +112,14 @@ class Database(object):
         return list(self._collections.keys())
 
 class Collection(object):
-    def __init__(self, db):
+    def __init__(self, db, name):
         super(Collection, self).__init__()
         self._documents = {}
         self._database = db
+        self._name = name
+    @property
+    def full_name(self):
+        return "{}.{}".format(self._database._name, self._name)
     def insert(self, data):
         if isinstance(data, list):
             return [self._insert(element) for element in data]
