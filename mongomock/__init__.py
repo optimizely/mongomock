@@ -124,12 +124,13 @@ class Collection(object):
         if isinstance(data, list):
             return [self._insert(element) for element in data]
         return self._insert(data)
-    def _insert(self, data):
+    def _insert(self, document):
+        data = self._copy_for_insert(document)
         if not '_id' in data:
             data['_id'] = ObjectId()
         object_id = data['_id']
         assert object_id not in self._documents
-        self._documents[object_id] = copy.deepcopy(data)
+        self._documents[object_id] = data
         return object_id
     def update(self, spec, document, upsert = False, manipulate = False,
                safe = False, multi = False, _check_keys = False, **kwargs):
@@ -207,6 +208,15 @@ class Collection(object):
             for key, value in dict(sort).items():
                 cursor.sort(key, value)
         return cursor
+
+    def _copy_for_insert(self, doc):
+        doc_copy = dict()
+        for key, value in doc.items():
+            if type(value) is dict and "$exists" in value:
+                continue
+            doc_copy[key] = value
+        return doc_copy
+
     def _copy_only_fields(self, doc, fields):
         """Copy only the specified fields."""
         if fields is None:
