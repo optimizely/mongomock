@@ -190,7 +190,11 @@ class Collection(object):
             if spec is None:
                 spec = filter
         dataset = (self._copy_only_fields(document, fields) for document in self._iter_documents(spec))
-        return Cursor(dataset)
+        cursor = Cursor(dataset)
+        if sort is not None:
+            for key, value in dict(sort).items():
+                cursor.sort(key, value)
+        return cursor
     def _copy_only_fields(self, doc, fields):
         """Copy only the specified fields."""
         if fields is None:
