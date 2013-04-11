@@ -196,7 +196,7 @@ class Collection(object):
                 document.update(spec)
             self.insert(document)
 
-    def find(self, spec = None, fields = None, filter = None, sort = None, slow = None, read_preference = None):
+    def find(self, spec = None, fields = None, filter = None, sort = None, slow = None, read_preference = None, limit = None):
         if filter is not None:
             _print_deprecation_warning('filter', 'spec')
             if spec is None:
