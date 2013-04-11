@@ -71,6 +71,7 @@ class Connection(object):
                  tz_aware = False, _connect = True, **kwargs):
         super(Connection, self).__init__()
         self._databases = {}
+        self._document_class = document_class
     def __getitem__(self, db_name):
         db = self._databases.get(db_name, None)
         if db is None:
@@ -98,6 +99,7 @@ class Database(object):
     def __init__(self, conn):
         super(Database, self).__init__()
         self._collections = {'system.indexes' : Collection(self)}
+        self._connection = conn
     def __getitem__(self, db_name):
         db = self._collections.get(db_name, None)
         if db is None:
@@ -112,6 +114,7 @@ class Collection(object):
     def __init__(self, db):
         super(Collection, self).__init__()
         self._documents = {}
+        self._database = db
     def insert(self, data):
         if isinstance(data, list):
             return [self._insert(element) for element in data]
@@ -191,8 +194,8 @@ class Collection(object):
     def _copy_only_fields(self, doc, fields):
         """Copy only the specified fields."""
         if fields is None:
-            return copy.deepcopy(doc)
-        doc_copy = {}
+          fields = doc.keys()
+        doc_copy = self._database._connection._document_class()
         if not fields:
             fields = ["_id"]
         for key in fields:
