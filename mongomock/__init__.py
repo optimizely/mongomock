@@ -319,3 +319,6 @@ class Cursor(object):
         return self
     def batch_size(self, count):
         return self
+    def rewind(self):
+        pass
+
