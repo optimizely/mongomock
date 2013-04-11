@@ -244,6 +244,10 @@ class Collection(object):
                 is_match = search.match(doc_val) is not None
             elif key in OPERATOR_MAP:
                 OPERATOR_MAP[key] (doc_val, search)
+            elif search is None:
+                is_match = doc_val is None or doc_val == NOTHING
+            elif type(doc_val) is list:
+                is_match = search in doc_val or search == doc_val
             else:
                 is_match = doc_val == search
 
