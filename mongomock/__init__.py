@@ -100,10 +100,10 @@ class Database(object):
         super(Database, self).__init__()
         self._collections = {'system.indexes' : Collection(self)}
         self._connection = conn
-    def __getitem__(self, db_name):
-        db = self._collections.get(db_name, None)
+    def __getitem__(self, collection_name):
+        db = self._collections.get(collection_name, None)
         if db is None:
-            db = self._collections[db_name] = Collection(self)
+            db = self._collections[collection_name] = Collection(self)
         return db
     def __getattr__(self, attr):
         return self[attr]
