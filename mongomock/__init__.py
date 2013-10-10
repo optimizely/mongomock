@@ -231,6 +231,7 @@ class Collection(object):
 
     def _iter_documents(self, filter = None):
         return (document for document in itervalues(self._documents) if self._filter_applies(filter, document))
+
     def find_one(self, spec=None, **kwargs):
         try:
             return next(self.find(spec, **kwargs))
@@ -257,6 +258,8 @@ class Collection(object):
             return True
         elif isinstance(search_filter, ObjectId):
             search_filter = {'_id': search_filter}
+        elif "$query" in search_filter:
+            search_filter = search_filter['$query']
 
         for key, search in iteritems(search_filter):
             doc_val = resolve_key_value(key, document)
