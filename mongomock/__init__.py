@@ -193,9 +193,9 @@ class Collection(object):
 
         if not found and upsert:
             if '$set' in document.keys():
-                document = document.pop('$set')
-                document.update(spec)
-            self.insert(document)
+                new_document = document['$set']
+                new_document.update(spec)
+            self.insert(new_document)
 
     def find(self, spec = None, fields = None, filter = None, sort = None, slow = None, read_preference = None, limit = None):
         if filter is not None:
